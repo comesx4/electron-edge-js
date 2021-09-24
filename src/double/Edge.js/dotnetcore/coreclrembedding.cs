@@ -74,7 +74,7 @@ public delegate void CallV8FunctionDelegate(IntPtr payload, int payloadType, Int
 public delegate void TaskCompleteDelegate(IntPtr result, int resultType, int taskState, IntPtr context);
 
 [SecurityCritical]
-public class CoreCLREmbedding
+public partial class CoreCLREmbedding
 {
     private class TaskState
     {
@@ -183,7 +183,7 @@ public class CoreCLREmbedding
         private readonly Dictionary<string, string> _libraries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string> _nativeLibraries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly IList<string> _knownPaths = new List<string>();
-        
+
         private readonly string _packagesPath;
 
         public EdgeAssemblyResolver()
@@ -212,7 +212,7 @@ public class CoreCLREmbedding
         public void LoadDependencyManifest(string dependencyManifestFile)
         {
             DebugMessage("EdgeAssemblyResolver::LoadDependencyManifest (CLR) - Loading dependency manifest from {0}", dependencyManifestFile);
-            
+
             DependencyContextJsonReader dependencyContextReader = new DependencyContextJsonReader();
 
             using (FileStream dependencyManifestStream = new FileStream(dependencyManifestFile, FileMode.Open, FileAccess.Read))
@@ -231,7 +231,7 @@ public class CoreCLREmbedding
                         dependencyContext = dependencyContext.Merge(dependencyContextReader.Read(runtimeDependencyManifestStream));
                     }
                 }
-                
+
                 AddDependencies(dependencyContext, RuntimeEnvironment.StandaloneApplication);
             }
 
@@ -240,11 +240,11 @@ public class CoreCLREmbedding
             //if (File.Exists(entryAssemblyPath))
             //{
             //    Assembly entryAssembly = Assembly.Load(new AssemblyName(Path.GetFileNameWithoutExtension(entryAssemblyPath)));
-           //     Lazy<DependencyContext> defaultDependencyContext = new Lazy<DependencyContext>(() => DependencyContext.Load(entryAssembly));
-           //     dependencyContext = dependencyContext.Merge(defaultDependencyContext);
+            //     Lazy<DependencyContext> defaultDependencyContext = new Lazy<DependencyContext>(() => DependencyContext.Load(entryAssembly));
+            //     dependencyContext = dependencyContext.Merge(defaultDependencyContext);
 
-                // I really don't like doing it this way, but it's the easiest way to give the running code access to the default dependency context data
-                //typeof(DependencyContext).GetField("_defaultContext", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, defaultDependencyContext);
+            // I really don't like doing it this way, but it's the easiest way to give the running code access to the default dependency context data
+            //typeof(DependencyContext).GetField("_defaultContext", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, defaultDependencyContext);
             //}
 
             DebugMessage("EdgeAssemblyResolver::LoadDependencyManifest (CLR) - Finished");
@@ -267,10 +267,10 @@ public class CoreCLREmbedding
                 string assemblyPath;
                 if (standalone && File.Exists(Path.Combine(RuntimeEnvironment.ApplicationDirectory, "refs", Path.GetFileName(compileLibrary.Assemblies[0].Replace('/', Path.DirectorySeparatorChar)))))
                     assemblyPath = Path.Combine(RuntimeEnvironment.ApplicationDirectory, "refs", Path.GetFileName(compileLibrary.Assemblies[0].Replace('/', Path.DirectorySeparatorChar)));
-                else 
+                else
                 {
                     assemblyPath = Path.Combine(_packagesPath, compileLibrary.Name.ToLower(), compileLibrary.Version, compileLibrary.Assemblies[0].Replace('/', Path.DirectorySeparatorChar).ToLower());
-                    if(!File.Exists(assemblyPath))                                 
+                    if (!File.Exists(assemblyPath))
                         assemblyPath = Path.Combine(_packagesPath, compileLibrary.Name.ToLower(), compileLibrary.Version, compileLibrary.Assemblies[0].Replace('/', Path.DirectorySeparatorChar));
                 }
                 if (!CompileAssemblies.ContainsKey(compileLibrary.Name))
@@ -307,14 +307,14 @@ public class CoreCLREmbedding
                     string assetPath = assets[0];
 
                     string assemblyPath;
-                    if(runtimeLibrary.Type == "project")                    
-                        assemblyPath = Path.Combine(RuntimeEnvironment.ApplicationDirectory, assetPath);                    
+                    if (runtimeLibrary.Type == "project")
+                        assemblyPath = Path.Combine(RuntimeEnvironment.ApplicationDirectory, assetPath);
                     else if (standalone)
                         assemblyPath = Path.Combine(RuntimeEnvironment.ApplicationDirectory, Path.GetFileName(assetPath));
-                    else 
+                    else
                     {
                         assemblyPath = Path.Combine(_packagesPath, runtimeLibrary.Name.ToLower(), runtimeLibrary.Version, assetPath.Replace('/', Path.DirectorySeparatorChar).ToLower());
-                        if(!File.Exists(assemblyPath))                                 
+                        if (!File.Exists(assemblyPath))
                             assemblyPath = Path.Combine(_packagesPath, runtimeLibrary.Name.ToLower(), runtimeLibrary.Version, assetPath.Replace('/', Path.DirectorySeparatorChar));
                     }
                     string libraryNameFromPath = Path.GetFileNameWithoutExtension(assemblyPath);
@@ -355,7 +355,7 @@ public class CoreCLREmbedding
                             DebugMessage("EdgeAssemblyResolver::AddDependencies (CLR) - Could not resolve supplementary runtime assembly {0}",
                                 assemblyPath);
                         }
-                        
+
                     }
 
                     if (!CompileAssemblies.ContainsKey(runtimeLibrary.Name))
@@ -391,7 +391,7 @@ public class CoreCLREmbedding
 
                     if (!CompileAssemblies.ContainsKey(libraryName))
                     {
-                         CompileAssemblies[libraryName] = supplementaryRuntimeLibraries[libraryName];
+                        CompileAssemblies[libraryName] = supplementaryRuntimeLibraries[libraryName];
                     }
                 }
 
@@ -404,8 +404,8 @@ public class CoreCLREmbedding
                     foreach (string nativeAssembly in nativeAssemblies)
                     {
                         string nativeAssemblyPath = Path.Combine(_packagesPath, runtimeLibrary.Name, runtimeLibrary.Version, nativeAssembly.Replace('/', Path.DirectorySeparatorChar));
-						
-						if (File.Exists(nativeAssemblyPath))
+
+                        if (File.Exists(nativeAssemblyPath))
                         {
                             _nativeLibraries[Path.GetFileNameWithoutExtension(nativeAssembly)] = nativeAssemblyPath;
                             DebugMessage("EdgeAssemblyResolver::AddDependencies (CLR) - Adding native assembly {0} at {1}",
@@ -416,7 +416,7 @@ public class CoreCLREmbedding
                             DebugMessage("EdgeAssemblyResolver::AddDependencies (CLR) - Could not resolve native assembly {0} at {1}",
                             Path.GetFileNameWithoutExtension(nativeAssembly), nativeAssemblyPath);
                         }
-						
+
                     }
                 }
             }
@@ -425,7 +425,7 @@ public class CoreCLREmbedding
         public string GetAssemblyPath(string assemblyName)
         {
             DebugMessage("CoreCLREmbedding::GetAssemblyPath (CLR) - Resolving assembly {0}", assemblyName);
-            
+
             if (!_libraries.ContainsKey(assemblyName))
             {
                 if (!TryAddAssembly(assemblyName)) return null;
@@ -447,7 +447,7 @@ public class CoreCLREmbedding
         internal void AddAssemblyPath(string assemblyPath)
         {
             DebugMessage("CoreCLREmbedding::AddAssemblyPath (CLR) - Adding known assembly path {0}", assemblyPath);
-            
+
             if (!_knownPaths.Contains(assemblyPath))
             {
                 _knownPaths.Add(assemblyPath);
@@ -459,7 +459,7 @@ public class CoreCLREmbedding
             DebugMessage("EdgeAssemblyResolver::AddCompiler (CLR) - Adding the compiler from dependency manifest file {0}", bootstrapDependencyManifest);
 
             DependencyContextJsonReader dependencyContextReader = new DependencyContextJsonReader();
-            
+
             using (FileStream bootstrapDependencyManifestStream = new FileStream(bootstrapDependencyManifest, FileMode.Open, FileAccess.Read))
             {
                 DependencyContext compilerDependencyContext = dependencyContextReader.Read(bootstrapDependencyManifestStream);
@@ -496,7 +496,7 @@ public class CoreCLREmbedding
             return false;
         }
     }
-    
+
     // ReSharper disable InconsistentNaming
     private static EdgeRuntimeEnvironment RuntimeEnvironment;
     private static EdgeAssemblyResolver Resolver;
@@ -538,7 +538,7 @@ public class CoreCLREmbedding
             {
                 Resolver.LoadDependencyManifest(RuntimeEnvironment.DependencyManifestFile);
             }
-            
+
             DebugMessage("CoreCLREmbedding::Initialize (CLR) - Complete");
         }
 
@@ -564,9 +564,9 @@ public class CoreCLREmbedding
         {
             return LoadContext.LoadFromAssemblyName(arg2);
         }
-        
+
         DebugMessage("CoreCLREmbedding::Assembly_Resolving (CLR) - Unable to resolve the assembly using the manifest list, returning null");
-        
+
         return null;
     }
 
@@ -636,7 +636,7 @@ public class CoreCLREmbedding
 
             if (!Compilers.ContainsKey(compiler))
             {
-                if (DependencyContext.Default ==null || !DependencyContext.Default.RuntimeLibraries.Any(l => l.Name == compiler))
+                if (DependencyContext.Default == null || !DependencyContext.Default.RuntimeLibraries.Any(l => l.Name == compiler))
                 {
                     if (!File.Exists(options["bootstrapDependencyManifest"].ToString()))
                     {
@@ -647,7 +647,7 @@ public class CoreCLREmbedding
 
                     Resolver.AddCompiler(options["bootstrapDependencyManifest"].ToString());
                 }
-                
+
                 Assembly compilerAssembly = Assembly.Load(new AssemblyName(compiler));
                 DebugMessage("CoreCLREmbedding::CompileFunc (CLR) - Compiler assembly {0} loaded successfully", compiler);
 
@@ -737,7 +737,7 @@ public class CoreCLREmbedding
             DebugMessage("CoreCLREmbedding::CallFunc (CLR) - Marshalling data of type {0} and calling the .NET method", ((V8Type)payloadType).ToString("G"));
             Task<Object> functionTask = wrapperFunc(MarshalV8ToCLR(payload, (V8Type)payloadType));
 
-            
+
             // Read the task status only once - you can't assume that an asychronous task's state won't change between reads
             TaskStatus taskStatus = functionTask.Status;
             Marshal.WriteInt32(taskState, (int)taskStatus);
@@ -745,38 +745,38 @@ public class CoreCLREmbedding
             switch (taskStatus)
             {
                 case TaskStatus.Faulted:
-                {
-                    DebugMessage("CoreCLREmbedding::CallFunc (CLR) - .NET method ran synchronously and faulted, marshalling exception data for V8");
+                    {
+                        DebugMessage("CoreCLREmbedding::CallFunc (CLR) - .NET method ran synchronously and faulted, marshalling exception data for V8");
 
-                    V8Type taskExceptionType;
+                        V8Type taskExceptionType;
 
-                    Marshal.WriteIntPtr(result, MarshalCLRToV8(functionTask.Exception, out taskExceptionType));
-                    Marshal.WriteInt32(resultType, (int)V8Type.Exception);
-                    break;
-                }
+                        Marshal.WriteIntPtr(result, MarshalCLRToV8(functionTask.Exception, out taskExceptionType));
+                        Marshal.WriteInt32(resultType, (int)V8Type.Exception);
+                        break;
+                    }
                 case TaskStatus.RanToCompletion:
-                {
-                    DebugMessage("CoreCLREmbedding::CallFunc (CLR) - .NET method ran synchronously, marshalling data for V8");
+                    {
+                        DebugMessage("CoreCLREmbedding::CallFunc (CLR) - .NET method ran synchronously, marshalling data for V8");
 
-                    V8Type taskResultType;
-                    IntPtr marshalData = MarshalCLRToV8(functionTask.Result, out taskResultType);
+                        V8Type taskResultType;
+                        IntPtr marshalData = MarshalCLRToV8(functionTask.Result, out taskResultType);
 
-                    DebugMessage("CoreCLREmbedding::CallFunc (CLR) - Method return data is of type {0}", taskResultType.ToString("G"));
+                        DebugMessage("CoreCLREmbedding::CallFunc (CLR) - Method return data is of type {0}", taskResultType.ToString("G"));
 
-                    Marshal.WriteIntPtr(result, marshalData);
-                    Marshal.WriteInt32(resultType, (int)taskResultType);
-                    break;
-                }
+                        Marshal.WriteIntPtr(result, marshalData);
+                        Marshal.WriteInt32(resultType, (int)taskResultType);
+                        break;
+                    }
                 default:
-                {
-                    DebugMessage("CoreCLREmbedding::CallFunc (CLR) - .NET method ran asynchronously, returning task handle and status");
+                    {
+                        DebugMessage("CoreCLREmbedding::CallFunc (CLR) - .NET method ran asynchronously, returning task handle and status");
 
-                    GCHandle taskHandle = GCHandle.Alloc(functionTask);
+                        GCHandle taskHandle = GCHandle.Alloc(functionTask);
 
-                    Marshal.WriteIntPtr(result, GCHandle.ToIntPtr(taskHandle));
-                    Marshal.WriteInt32(resultType, (int)V8Type.Task);
-                    break;
-                }
+                        Marshal.WriteIntPtr(result, GCHandle.ToIntPtr(taskHandle));
+                        Marshal.WriteInt32(resultType, (int)V8Type.Task);
+                        break;
+                    }
             }
 
             DebugMessage("CoreCLREmbedding::CallFunc (CLR) - Finished");
@@ -967,7 +967,7 @@ public class CoreCLREmbedding
         else if (clrObject is string)
         {
             v8Type = V8Type.String;
-            return Marshal.StringToCoTaskMemUTF8((string) clrObject);
+            return Marshal.StringToCoTaskMemUTF8((string)clrObject);
         }
 
         else if (clrObject is char)
@@ -979,9 +979,9 @@ public class CoreCLREmbedding
         else if (clrObject is bool)
         {
             v8Type = V8Type.Boolean;
-            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof (int));
+            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof(int));
 
-            Marshal.WriteInt32(memoryLocation, ((bool) clrObject)
+            Marshal.WriteInt32(memoryLocation, ((bool)clrObject)
                 ? 1
                 : 0);
             return memoryLocation;
@@ -996,7 +996,7 @@ public class CoreCLREmbedding
         else if (clrObject is DateTime)
         {
             v8Type = V8Type.Date;
-            DateTime dateTime = (DateTime) clrObject;
+            DateTime dateTime = (DateTime)clrObject;
 
             if (dateTime.Kind == DateTimeKind.Local)
             {
@@ -1008,8 +1008,8 @@ public class CoreCLREmbedding
                 dateTime = new DateTime(dateTime.Ticks, DateTimeKind.Utc);
             }
 
-            long ticks = (dateTime.Ticks - MinDateTimeTicks)/10000;
-            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof (double));
+            long ticks = (dateTime.Ticks - MinDateTimeTicks) / 10000;
+            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof(double));
 
             WriteDouble(memoryLocation, ticks);
             return memoryLocation;
@@ -1030,7 +1030,7 @@ public class CoreCLREmbedding
         else if (clrObject is short)
         {
             v8Type = V8Type.Int32;
-            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof (int));
+            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof(int));
 
             Marshal.WriteInt32(memoryLocation, Convert.ToInt32(clrObject));
             return memoryLocation;
@@ -1039,36 +1039,36 @@ public class CoreCLREmbedding
         else if (clrObject is int)
         {
             v8Type = V8Type.Int32;
-            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof (int));
+            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof(int));
 
-            Marshal.WriteInt32(memoryLocation, (int) clrObject);
+            Marshal.WriteInt32(memoryLocation, (int)clrObject);
             return memoryLocation;
         }
 
         else if (clrObject is long)
         {
             v8Type = V8Type.Number;
-            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof (double));
+            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof(double));
 
-            WriteDouble(memoryLocation, Convert.ToDouble((long) clrObject));
+            WriteDouble(memoryLocation, Convert.ToDouble((long)clrObject));
             return memoryLocation;
         }
 
         else if (clrObject is double)
         {
             v8Type = V8Type.Number;
-            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof (double));
+            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof(double));
 
-            WriteDouble(memoryLocation, (double) clrObject);
+            WriteDouble(memoryLocation, (double)clrObject);
             return memoryLocation;
         }
 
         else if (clrObject is float)
         {
             v8Type = V8Type.Number;
-            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof (double));
+            IntPtr memoryLocation = Marshal.AllocCoTaskMem(sizeof(double));
 
-            WriteDouble(memoryLocation, Convert.ToDouble((Single) clrObject));
+            WriteDouble(memoryLocation, Convert.ToDouble((Single)clrObject));
             return memoryLocation;
         }
 
@@ -1093,16 +1093,16 @@ public class CoreCLREmbedding
 
             if (clrObject is byte[])
             {
-                buffer = (byte[]) clrObject;
+                buffer = (byte[])clrObject;
             }
 
             else
             {
-                buffer = ((IEnumerable<byte>) clrObject).ToArray();
+                buffer = ((IEnumerable<byte>)clrObject).ToArray();
             }
 
             bufferData.bufferLength = buffer.Length;
-            bufferData.buffer = Marshal.AllocCoTaskMem(buffer.Length*sizeof (byte));
+            bufferData.buffer = Marshal.AllocCoTaskMem(buffer.Length * sizeof(byte));
 
             Marshal.Copy(buffer, 0, bufferData.buffer, bufferData.bufferLength);
 
@@ -1122,7 +1122,7 @@ public class CoreCLREmbedding
 
             if (clrObject is ExpandoObject)
             {
-                IDictionary<string, object> objectDictionary = (IDictionary<string, object>) clrObject;
+                IDictionary<string, object> objectDictionary = (IDictionary<string, object>)clrObject;
 
                 keys = objectDictionary.Keys;
                 keyCount = objectDictionary.Keys.Count;
@@ -1131,7 +1131,7 @@ public class CoreCLREmbedding
 
             else
             {
-                IDictionary objectDictionary = (IDictionary) clrObject;
+                IDictionary objectDictionary = (IDictionary)clrObject;
 
                 keys = objectDictionary.Keys;
                 keyCount = objectDictionary.Keys.Count;
@@ -1142,16 +1142,16 @@ public class CoreCLREmbedding
             int counter = 0;
 
             objectData.propertiesCount = keyCount;
-            objectData.propertyNames = Marshal.AllocCoTaskMem(PointerSize*keyCount);
-            objectData.propertyTypes = Marshal.AllocCoTaskMem(sizeof (int)*keyCount);
-            objectData.propertyValues = Marshal.AllocCoTaskMem(PointerSize*keyCount);
+            objectData.propertyNames = Marshal.AllocCoTaskMem(PointerSize * keyCount);
+            objectData.propertyTypes = Marshal.AllocCoTaskMem(sizeof(int) * keyCount);
+            objectData.propertyValues = Marshal.AllocCoTaskMem(PointerSize * keyCount);
 
             foreach (object key in keys)
             {
-                Marshal.WriteIntPtr(objectData.propertyNames, counter*PointerSize, Marshal.StringToCoTaskMemUTF8(key.ToString()));
+                Marshal.WriteIntPtr(objectData.propertyNames, counter * PointerSize, Marshal.StringToCoTaskMemUTF8(key.ToString()));
                 V8Type propertyType;
-                Marshal.WriteIntPtr(objectData.propertyValues, counter*PointerSize, MarshalCLRToV8(getValue(key), out propertyType));
-                Marshal.WriteInt32(objectData.propertyTypes, counter*sizeof (int), (int) propertyType);
+                Marshal.WriteIntPtr(objectData.propertyValues, counter * PointerSize, MarshalCLRToV8(getValue(key), out propertyType));
+                Marshal.WriteInt32(objectData.propertyTypes, counter * sizeof(int), (int)propertyType);
 
                 counter++;
             }
@@ -1170,17 +1170,17 @@ public class CoreCLREmbedding
             List<IntPtr> itemValues = new List<IntPtr>();
             List<int> itemTypes = new List<int>();
 
-            foreach (object item in (IEnumerable) clrObject)
+            foreach (object item in (IEnumerable)clrObject)
             {
                 V8Type itemType;
 
                 itemValues.Add(MarshalCLRToV8(item, out itemType));
-                itemTypes.Add((int) itemType);
+                itemTypes.Add((int)itemType);
             }
 
             arrayData.arrayLength = itemValues.Count;
-            arrayData.itemTypes = Marshal.AllocCoTaskMem(sizeof (int)*arrayData.arrayLength);
-            arrayData.itemValues = Marshal.AllocCoTaskMem(PointerSize*arrayData.arrayLength);
+            arrayData.itemTypes = Marshal.AllocCoTaskMem(sizeof(int) * arrayData.arrayLength);
+            arrayData.itemValues = Marshal.AllocCoTaskMem(PointerSize * arrayData.arrayLength);
 
             Marshal.Copy(itemTypes.ToArray(), 0, arrayData.itemTypes, arrayData.arrayLength);
             Marshal.Copy(itemValues.ToArray(), 0, arrayData.itemValues, arrayData.arrayLength);
@@ -1191,7 +1191,7 @@ public class CoreCLREmbedding
             return destinationPointer;
         }
 
-        else if (clrObject.GetType().GetTypeInfo().IsGenericType && clrObject.GetType().GetGenericTypeDefinition() == typeof (Func<,>))
+        else if (clrObject.GetType().GetTypeInfo().IsGenericType && clrObject.GetType().GetGenericTypeDefinition() == typeof(Func<,>))
         {
             Func<object, Task<object>> funcObject = clrObject as Func<object, Task<object>>;
 
@@ -1235,24 +1235,25 @@ public class CoreCLREmbedding
             int counter = 0;
 
             objectData.propertiesCount = propertyAccessors.Count;
-            objectData.propertyNames = Marshal.AllocCoTaskMem(PointerSize*propertyAccessors.Count);
-            objectData.propertyTypes = Marshal.AllocCoTaskMem(sizeof (int)*propertyAccessors.Count);
-            objectData.propertyValues = Marshal.AllocCoTaskMem(PointerSize*propertyAccessors.Count);
+            objectData.propertyNames = Marshal.AllocCoTaskMem(PointerSize * propertyAccessors.Count);
+            objectData.propertyTypes = Marshal.AllocCoTaskMem(sizeof(int) * propertyAccessors.Count);
+            objectData.propertyValues = Marshal.AllocCoTaskMem(PointerSize * propertyAccessors.Count);
 
             foreach (Tuple<string, Func<object, object>> propertyAccessor in propertyAccessors)
             {
-                Marshal.WriteIntPtr(objectData.propertyNames, counter*PointerSize, Marshal.StringToCoTaskMemUTF8(propertyAccessor.Item1));
+                Marshal.WriteIntPtr(objectData.propertyNames, counter * PointerSize, Marshal.StringToCoTaskMemUTF8(propertyAccessor.Item1));
 
                 V8Type propertyType;
-                if(clrObject.GetType().FullName.StartsWith("System.Reflection"))
+                if (clrObject.GetType().FullName.StartsWith("System.Reflection"))
                 {
                     propertyType = V8Type.String;
-                    Marshal.WriteIntPtr(objectData.propertyValues, counter*PointerSize, Marshal.StringToCoTaskMemUTF8(string.Empty));
-                }else
-                {
-                    Marshal.WriteIntPtr(objectData.propertyValues, counter*PointerSize, MarshalCLRToV8(propertyAccessor.Item2(clrObject), out propertyType));
+                    Marshal.WriteIntPtr(objectData.propertyValues, counter * PointerSize, Marshal.StringToCoTaskMemUTF8(string.Empty));
                 }
-                Marshal.WriteInt32(objectData.propertyTypes, counter*sizeof (int), (int) propertyType);
+                else
+                {
+                    Marshal.WriteIntPtr(objectData.propertyValues, counter * PointerSize, MarshalCLRToV8(propertyAccessor.Item2(clrObject), out propertyType));
+                }
+                Marshal.WriteInt32(objectData.propertyTypes, counter * sizeof(int), (int)propertyType);
                 counter++;
             }
 
@@ -1325,6 +1326,83 @@ public class CoreCLREmbedding
             default:
                 throw new Exception("Unsupported V8 object type: " + objectType + ".");
         }
+    }
+
+    public static object[] MarshalV8ToCLRArray(IntPtr v8Object, V8Type objectType)
+    {
+        object value;
+        switch (objectType)
+        {
+            case V8Type.String:
+                value = Marshal.PtrToStringUTF8(v8Object);
+                break;
+
+            case V8Type.Object:
+                value = V8ObjectToExpando(Marshal.PtrToStructure<V8ObjectData>(v8Object));
+                break;
+
+            case V8Type.Boolean:
+                value = Marshal.ReadByte(v8Object) != 0;
+                break;
+
+            case V8Type.Number:
+                value = ReadDouble(v8Object);
+                break;
+
+            case V8Type.Date:
+                double ticks = ReadDouble(v8Object);
+                value = new DateTime(Convert.ToInt64(ticks) * 10000 + MinDateTimeTicks, DateTimeKind.Utc);
+                break;
+
+            case V8Type.Null:
+                value = null;
+                break;
+
+            case V8Type.Int32:
+                value = Marshal.ReadInt32(v8Object);
+                break;
+
+            case V8Type.UInt32:
+                value = (uint)Marshal.ReadInt32(v8Object);
+                break;
+
+            case V8Type.Function:
+                NodejsFunc nodejsFunc = new NodejsFunc(v8Object);
+                value = nodejsFunc.GetFunc();
+                break;
+
+            case V8Type.Array:
+                V8ArrayData arrayData = Marshal.PtrToStructure<V8ArrayData>(v8Object);
+                object[] array = new object[arrayData.arrayLength];
+
+                for (int i = 0; i < arrayData.arrayLength; i++)
+                {
+                    int itemType = Marshal.ReadInt32(arrayData.itemTypes, i * sizeof(int));
+                    IntPtr itemValuePointer = Marshal.ReadIntPtr(arrayData.itemValues, i * PointerSize);
+
+                    array[i] = MarshalV8ToCLR(itemValuePointer, (V8Type)itemType);
+                }
+
+                return array;
+
+            case V8Type.Buffer:
+                V8BufferData bufferData = Marshal.PtrToStructure<V8BufferData>(v8Object);
+                byte[] buffer = new byte[bufferData.bufferLength];
+
+                Marshal.Copy(bufferData.buffer, buffer, 0, bufferData.bufferLength);
+                value = buffer;
+                break;
+
+            case V8Type.Exception:
+                string message = Marshal.PtrToStringUTF8(v8Object);
+                value = new Exception(message);
+                break;
+
+            default:
+                throw new Exception("Unsupported V8 object type: " + objectType + ".");
+        }
+
+        return new[] { value };
     }
 
     private static unsafe void WriteDouble(IntPtr pointer, double value)
@@ -1411,7 +1489,7 @@ public class CoreCLREmbedding
 
         return expando;
     }
-    
+
     internal static void DebugMessage(string message, params object[] parameters)
     {
         if (DebugMode)

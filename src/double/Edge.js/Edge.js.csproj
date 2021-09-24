@@ -3,13 +3,59 @@
     <Description>With Edge.js you can script Node.js in a .NET application. Edge.js allows you to run Node.js and .NET code in one process. You can call Node.js functions from .NET and .NET functions from Node.js. Edge.js takes care of marshalling data between CLR and V8. Edge.js also reconciles threading models of single threaded V8 and multi-threaded CLR. Edge.js ensures correct lifetime of objects on V8 and CLR heaps. This Edge.js NuGet package supports scripting Node.js v6.5.0.</Description>
     <Copyright>Copyright 2015 Tomasz Janczuk</Copyright>
     <VersionPrefix>9.3.0</VersionPrefix>
-    <TargetFrameworks>net461;netcoreapp1.1;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0</TargetFrameworks>
     <AssemblyName>EdgeJs</AssemblyName>
     <PackageId>Edge.js</PackageId>
     <PackageTags>node.js;node;.net;edge;edge.js;v8;clr;coreclr;mono;interop;javascript</PackageTags>
     <PackageLicenseUrl>https://raw.githubusercontent.com/agracio/electron-edge-js/master/LICENSE</PackageLicenseUrl>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="dotnetcore\clrobject\**" />
+    <None Remove="dotnetcore\clrobject\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="dotnetcore\clrobject\coreclrobject.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptBinding\CamelCaseJavascriptNameConverter.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptBinding\IJavascriptNameConverter.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptBinding\JavascriptBindingSettings.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptBinding\LegacyCamelCaseJavascriptNameConverter.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptCallback.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptIgnoreAttribute.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptMethod.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptObject.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptObjectRepository.cs" />
+    <Compile Include="dotnetcore\clrobject\JavascriptProperty.cs" />
+    <Compile Include="dotnetcore\clrobject\MethodParameter.cs" />
+    <Compile Include="dotnetcore\clrobject\ModelBinding\BindingMemberInfo.cs" />
+    <Compile Include="dotnetcore\clrobject\ModelBinding\DefaultBinder.cs" />
+    <Compile Include="dotnetcore\clrobject\ModelBinding\IAsyncMethodInterceptor.cs" />
+    <Compile Include="dotnetcore\clrobject\ModelBinding\IBinder.cs" />
+    <Compile Include="dotnetcore\clrobject\ModelBinding\IMethodInterceptor.cs" />
+    <Compile Include="dotnetcore\clrobject\ModelBinding\ModelBindingExtensions.cs" />
+    <Compile Include="dotnetcore\clrobject\StringCheck.cs" />
+    <Compile Include="dotnetcore\clrobject\TryCallMethodResult.cs" />
+    <Compile Include="dotnetcore\coreclrobject\coreclrobject.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptBinding\CamelCaseJavascriptNameConverter.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptBinding\IJavascriptNameConverter.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptBinding\JavascriptBindingSettings.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptBinding\LegacyCamelCaseJavascriptNameConverter.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptCallback.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptIgnoreAttribute.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptMethod.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptObject.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptObjectRepository.cs" />
+    <Compile Include="dotnetcore\coreclrobject\JavascriptProperty.cs" />
+    <Compile Include="dotnetcore\coreclrobject\MethodParameter.cs" />
+    <Compile Include="dotnetcore\coreclrobject\ModelBinding\BindingMemberInfo.cs" />
+    <Compile Include="dotnetcore\coreclrobject\ModelBinding\DefaultBinder.cs" />
+    <Compile Include="dotnetcore\coreclrobject\ModelBinding\IAsyncMethodInterceptor.cs" />
+    <Compile Include="dotnetcore\coreclrobject\ModelBinding\IBinder.cs" />
+    <Compile Include="dotnetcore\coreclrobject\ModelBinding\IMethodInterceptor.cs" />
+    <Compile Include="dotnetcore\coreclrobject\ModelBinding\ModelBindingExtensions.cs" />
+    <Compile Include="dotnetcore\coreclrobject\StringCheck.cs" />
+    <Compile Include="dotnetcore\coreclrobject\TryCallMethodResult.cs" />
+  </ItemGroup>
   <ItemGroup>
     <None Update="..\..\..\tools\build\nuget\content\edge\x64\*">
       <PackagePath>content/edge/x64/</PackagePath>
@@ -61,8 +107,12 @@
     <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="dotnetcore\clrobject\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.8.2" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="2.1.0" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 </Project>
